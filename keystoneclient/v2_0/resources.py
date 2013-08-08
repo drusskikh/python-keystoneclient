@@ -35,27 +35,27 @@ class ResourceManager(base.CrudManager):
     base_url='/OS-QUOTAS'
 
     def create(self, name, description, default_limit):
-        return super(CrudManager, self).create(
+        return super(ResourceManager, self).create(
             name=name,
             description=description,
             default_limit=default_limit)
 
     def list(self):
-        return super(CrudManager, self).list()
+        return super(ResourceManager, self).list()
 
     def get(self, resource_id):
-        return super(CrudManager, self).get(
+        return super(ResourceManager, self).get(
             resource_id=resource_id
             )
 
     def update(self, resource_id, name=None, description=None,
               default_limit=None):
-        return super(CrudManager, self).update(
+        return super(ResourceManager, self).update(
             resource_id=resource_id,
             name=name,
             description=description,
             default_limit=default_limit)
 
     def delete(self, resource_id):
-        return super(CrudManager, self).delete(
+        return super(ResourceManager, self).delete(
             resource_id=resource_id)

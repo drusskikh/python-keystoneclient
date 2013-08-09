@@ -527,7 +527,7 @@ def do_token_get(kc, args):
 #@utils.arg('--tenant', '--tenant-id', metavar='<tenant>',
 #           help='Tenant;  lists all users if not specified')
 #@utils.arg('--tenant_id', help=argparse.SUPPRESS)
-def do_resource_list(kc):
+def do_resource_list(kc, args):
     """List resources."""
     resources = kc.resources.list()
     utils.print_list(resources, ['id', 'name', 'description',

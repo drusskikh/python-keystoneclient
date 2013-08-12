@@ -23,8 +23,6 @@ from keystoneclient.v2_0 import services
 from keystoneclient.v2_0 import tenants
 from keystoneclient.v2_0 import tokens
 from keystoneclient.v2_0 import users
-from keystoneclient.v2_0 import resources
-from keystoneclient.v2_0 import quotas
 
 
 _logger = logging.getLogger(__name__)
@@ -133,8 +131,6 @@ class Client(client.HTTPClient):
         self.tenants = tenants.TenantManager(self)
         self.tokens = tokens.TokenManager(self)
         self.users = users.UserManager(self)
-        self.resources = resources.ResourceManager(self)
-        self.quotas = quotas.QuotaManager(self)
 
         # extensions
         self.ec2 = ec2.CredentialsManager(self)

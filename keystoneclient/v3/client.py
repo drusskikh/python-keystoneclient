@@ -26,6 +26,8 @@ from keystoneclient.v3 import projects
 from keystoneclient.v3 import roles
 from keystoneclient.v3 import services
 from keystoneclient.v3 import users
+from keystoneclient.v3 import resources
+from keystoneclient.v3 import quotas
 
 
 _logger = logging.getLogger(__name__)
@@ -97,6 +99,8 @@ class Client(client.HTTPClient):
         self.roles = roles.RoleManager(self)
         self.services = services.ServiceManager(self)
         self.users = users.UserManager(self)
+        self.resources = resources.ResourceManager(self)
+        self.quotas = quotas.QuotaManager(self)
 
         if self.management_url is None:
             self.authenticate()

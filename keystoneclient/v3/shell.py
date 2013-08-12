@@ -523,7 +523,7 @@ def do_resource_get(kc, args):
     utils.print_dict(resource._info)
 
 
-@utils.arg('--name', metavar='<resource_name>', required=True,
+@utils.arg('--name', metavar='<name>', required=True,
            help='Name of the new resource (must be unique)')
 @utils.arg('--description', metavar='<description>',
            help='Description of the new resource')
@@ -538,7 +538,7 @@ def do_resource_create(kc, args):
 
 @utils.arg('--resource_id', metavar='<resource_id>', required=True,
             help='ID of resource to update')
-@utils.arg('--name', metavar='<resource_name>',
+@utils.arg('--name', metavar='<name>',
            help='Name of resource to update')
 @utils.arg('--description', metavar='<description>',
            help='Description of resource to update')
@@ -547,8 +547,8 @@ def do_resource_create(kc, args):
 def do_resource_update(kc, args):
     """Update resource."""
     kwargs = {}
-    if args.resource_name:
-        kwargs['resource_name'] = args.resource_name
+    if args.name:
+        kwargs['name'] = args.name
     if args.email:
         kwargs['description'] = args.description
     if args.default_limit:
@@ -582,8 +582,8 @@ def do_quota_list(kc, args):
     """List quotas."""
     quotas = kc.quotas.list(user_id=args.user_id,
                             project_id=args.tenant_id)
-    utils.print_list(quotas, ['id', 'resource_name', 'limit'],
-                     order_by='resource_name')
+    utils.print_list(quotas, ['id', 'name', 'limit'],
+                     order_by='name')
 
 
 @utils.arg('--user-id', metavar='<user_id>',

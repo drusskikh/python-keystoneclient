@@ -33,6 +33,7 @@ from keystoneclient import exceptions as exc
 from keystoneclient.generic import shell as shell_generic
 from keystoneclient import utils
 from keystoneclient.v2_0 import shell as shell_v2_0
+from keystoneclient.v3 import shell as shell_v3
 
 
 def positive_non_zero_float(argument_value):
@@ -437,6 +438,8 @@ class OpenStackIdentityShell(object):
         try:
             return {
                 "2.0": shell_v2_0.CLIENT_CLASS,
+                "3": shell_v3.CLIENT_CLASS,
+                "3.0": shell_v3.CLIENT_CLASS,
             }[version]
         except KeyError:
             return shell_v2_0.CLIENT_CLASS

@@ -263,6 +263,8 @@ class OpenStackIdentityShell(object):
         try:
             actions_module = {
                 '2.0': shell_v2_0,
+                '3': shell_v3,
+                '3.0': shell_v3,
             }[version]
         except KeyError:
             actions_module = shell_v2_0

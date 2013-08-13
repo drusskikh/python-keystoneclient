@@ -549,7 +549,7 @@ def do_resource_update(kc, args):
     kwargs = {}
     if args.name:
         kwargs['name'] = args.name
-    if args.email:
+    if args.description:
         kwargs['description'] = args.description
     if args.default_limit:
         kwargs['default_limit'] = args.default_limit
@@ -559,81 +559,68 @@ def do_resource_update(kc, args):
         return
 
     try:
-        kc.resources.update(resource, args.resource_id, **kwargs)
+        kc.resources.update(resource_id=args.resource_id, **kwargs)
+
         print('Resource has been updated.')
     except Exception as e:
         print('Unable to update resource: %s' % e)
 
 
-@utils.arg('--resource_id', metavar='<resource>',  required=True,
+@utils.arg('--resource_id', metavar='<resource>', required=True,
             help='ID of resource to delete')
 def do_resource_delete(kc, args):
     """Delete resource."""
-    kc.resource.delete(args.resource_id)
+    kc.resources.delete(args.resource_id)
 
 
-@utils.arg('--user-id', metavar='<user_id>',
+@utils.arg('--user-id', metavar='<user_id>', required=True,
            help='Id of user for which we need to list all quotas')
 @utils.arg('--user_id', help=argparse.SUPPRESS)
-@utils.arg('--tenant-id', metavar='<tenant_id>',
-           help='Id of project for which we need to list all quotas')
-@utils.arg('--tenant_id', help=argparse.SUPPRESS)
-def do_quota_list(kc, args):
+def do_user_quota_list(kc, args):
     """List quotas."""
-    quotas = kc.quotas.list(user_id=args.user_id,
-                            project_id=args.tenant_id)
+    quotas = kc.quotas.list_user_quotas(user_id=args.user_id)
     utils.print_list(quotas, ['id', 'name', 'limit'],
                      order_by='name')
 
 
-@utils.arg('--user-id', metavar='<user_id>',
+@utils.arg('--user-id', metavar='<user_id>', required=True,
            help='Id of user who owns quota we want to display')
 @utils.arg('--user_id', help=argparse.SUPPRESS)
-@utils.arg('--tenant-id', metavar='<tenant_id>',
-           help='Id of project who owns quota we want to display')
-@utils.arg('--tenant_id', help=argparse.SUPPRESS)
-@utils.arg('--quota_id', metavar='<quota_id>', required=True,
+@utils.arg('--quota-id', metavar='<quota_id>', required=True,
             help='ID of quota to display')
-def do_quota_get(kc, args):
+def do_user_quota_get(kc, args):
     """Display quota details."""
-    quota = kc.quotas.get(user_id=args.user_id,
-                          project_id=args.tenant_id,
+    quota = kc.quotas.get_user_quota(user_id=args.user_id,
                           quota_id=args.quota_id)
     utils.print_dict(quota._info)
 
-@utils.arg('--user-id', metavar='<user_id>',
+@utils.arg('--user-id', metavar='<user_id>', required=True,
            help='Id of user who will own quota we want to create')
 @utils.arg('--user_id', help=argparse.SUPPRESS)
-@utils.arg('--tenant-id', metavar='<tenant_id>',
-           help='Id of project who will own quota we want to create')
-@utils.arg('--resource_id', metavar='<resource_id>', required=True,
+@utils.arg('--resource-id', metavar='<resource_id>', required=True,
            help='Id of resource which will be limited by this quota')
 @utils.arg('--limit', metavar='<limit>',
            help='Limit of resource we want to set in this quota')
-def do_quota_create(kc, args):
+def do_user_quota_create(kc, args):
     """Create quota."""
-    quota = kc.quotas.create(user_id=args.user_id,
-                             project_id=args.tenant_id,
+    quota = kc.quotas.create_user_quota(user_id=args.user_id,
                              resource_id=args.resource_id,
                              limit=args.limit)
     utils.print_dict(quota._info)
 
 
-@utils.arg('--user-id', metavar='<user_id>',
+@utils.arg('--user-id', metavar='<user_id>', required=True,
            help='Id of user who owns quota we want to update')
 @utils.arg('--user_id', help=argparse.SUPPRESS)
-@utils.arg('--tenant-id', metavar='<tenant_id>',
-           help='Id of project who owns quota we want to update')
-@utils.arg('--quota_id', metavar='<quota_id>', required=True,
+@utils.arg('--quota-id', metavar='<quota_id>', required=True,
            help='Id of quota we want to update')
 @utils.arg('--limit', metavar='<limit>', required=True,
            help='New limit of resource we want to set in this quota')
-def do_quota_update(kc, args):
+def do_user_quota_update(kc, args):
     """Update quota limit."""
 
     try:
-        kc.resources.update(user_id=args.user_id,
-                            project_id=args.tenant_id,
+        kc.quotas.update_user_quota(user_id=args.user_id,
                             quota_id=args.quota_id,
                             limit=args.limit)
         print('Quota has been updated.')
@@ -641,15 +628,79 @@ def do_quota_update(kc, args):
         print('Unable to update quota: %s' % e)
 
 
-@utils.arg('--user-id', metavar='<user_id>',
+@utils.arg('--user-id', metavar='<user_id>', required=True,
            help='Id of user who owns quota we want to delete')
 @utils.arg('--user_id', help=argparse.SUPPRESS)
-@utils.arg('--tenant-id', metavar='<tenant_id>',
-           help='Id of project who owns quota we want to delete')
-@utils.arg('--quota_id', metavar='<quota>', required=True,
+@utils.arg('--quota-id', metavar='<quota_id>', required=True,
             help='ID of quota we want to delete')
-def do_quota_delete(kc, args):
+def do_user_quota_delete(kc, args):
+    """Delete user quota."""
+    kc.quotas.delete_user_quota(user_id=args.user_id,
+                       quota_id=args.quota_id)
+
+
+@utils.arg('--tenant-id', metavar='<tenant_id>', required=True,
+           help='Id of project for which we need to list all quotas')
+@utils.arg('--tenant_id', help=argparse.SUPPRESS)
+def do_project_quota_list(kc, args):
+    """List quotas."""
+    quotas = kc.quotas.list_project_quotas(project_id=args.tenant_id)
+    utils.print_list(quotas, ['id', 'name', 'limit'],
+                     order_by='name')
+
+
+@utils.arg('--tenant-id', metavar='<tenant_id>', required=True,
+           help='Id of project who owns quota we want to display')
+@utils.arg('--tenant_id', help=argparse.SUPPRESS)
+@utils.arg('--quota-id', metavar='<quota_id>', required=True,
+            help='ID of quota to display')
+def do_project_quota_get(kc, args):
+    """Display quota details."""
+    quota = kc.quotas.get_project_quota(project_id=args.tenant_id,
+                          quota_id=args.quota_id)
+    utils.print_dict(quota._info)
+
+
+@utils.arg('--tenant-id', metavar='<tenant_id>', required=True,
+           help='Id of project who will own quota we want to create')
+@utils.arg('--tenant_id', help=argparse.SUPPRESS)
+@utils.arg('--resource-id', metavar='<resource_id>', required=True,
+           help='Id of resource which will be limited by this quota')
+@utils.arg('--limit', metavar='<limit>',
+           help='Limit of resource we want to set in this quota')
+def do_project_quota_create(kc, args):
+    """Create quota."""
+    quota = kc.quotas.create_project_quota(project_id=args.tenant_id,
+                             resource_id=args.resource_id,
+                             limit=args.limit)
+    utils.print_dict(quota._info)
+
+
+@utils.arg('--tenant-id', metavar='<tenant_id>', required=True,
+           help='Id of project who owns quota we want to update')
+@utils.arg('--tenant_id', help=argparse.SUPPRESS)
+@utils.arg('--quota-id', metavar='<quota_id>', required=True,
+           help='Id of quota we want to update')
+@utils.arg('--limit', metavar='<limit>', required=True,
+           help='New limit of resource we want to set in this quota')
+def do_project_quota_update(kc, args):
+    """Update project quota limit."""
+
+    try:
+        kc.quotas.update_project_quota(project_id=args.tenant_id,
+                            quota_id=args.quota_id,
+                            limit=args.limit)
+        print('Quota has been updated.')
+    except Exception as e:
+        print('Unable to update quota: %s' % e)
+
+
+@utils.arg('--tenant-id', metavar='<tenant_id>', required=True,
+           help='Id of project who owns quota we want to delete')
+@utils.arg('--tenant_id', help=argparse.SUPPRESS)
+@utils.arg('--quota-id', metavar='<quota>', required=True,
+            help='ID of quota we want to delete')
+def do_project_quota_delete(kc, args):
     """Delete quota."""
-    kc.resource.delete(user_id=args.user_id,
-                       project_id=args.tenant_id,
+    kc.quotas.delete_project_quota(project_id=args.tenant_id,
                        quota_id=args.quota_id)

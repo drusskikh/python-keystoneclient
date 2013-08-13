@@ -38,43 +38,81 @@ class QuotaManager(base.CrudManager):
             msg = 'Specify either a user_id or project_id, not both'
             raise exceptions.ValidationError(msg)
 
-    def build_base_url(self, user_id=None, project_id=None):
-        self._require_user_xor_project(user_id, project_id)
+    def build_user_quota_base_url(self, user_id):
+        self.base_url = '/users/%s/OS-QUOTAS' % user_id
 
-        if user_id is not None:
-            base_url = '/users/%d/OS-QUOTAS' % user_id
-        else:
-            base_url = '/projects/%d/OS-QUOTAS' % project_id
+    def build_project_quota_base_url(self, project_id):
+        self.base_url = '/projects/%s/OS-QUOTAS' % project_id
 
-
-    def create(self, resource_id, user_id=None, project_id=None,
+    def create_user_quota(self, user_id, resource_id,
                limit=None):
-        self.build_base_url(user_id, project_id)
+        self.build_user_quota_base_url(user_id)
 
         return super(QuotaManager, self).create(
+            base_url=self.base_url,
             resource_id=resource_id,
             limit=limit)
 
-    def list(self, user_id=None, project_id=None, **kwargs):
-        self.build_base_url(user_id, project_id)
+    def list_user_quotas(self, user_id):
+        self.build_user_quota_base_url(user_id)
 
-        return super(QuotaManager, self).list(**kwargs)
+        return super(QuotaManager, self).list(base_url=self.base_url)
 
-    def get(self, quota_id, user_id=None, project_id=None):
-        self.build_base_url(user_id, project_id)
+    def get_user_quota(self, user_id, quota_id):
+        self.build_user_quota_base_url(user_id)
 
         return super(QuotaManager, self).get(
+            base_url=self.base_url,
             quota_id=quota_id)
 
-    def update(self, quota_id, limit, user_id=None, project_id=None):
-        self.build_base_url(user_id, project_id)
+    def update_user_quota(self, user_id, quota_id, limit):
+        self.build_user_quota_base_url(user_id)
 
         return super(QuotaManager, self).update(
+            base_url=self.base_url,
             quota_id=quota_id,
             limit=limit)
 
-    def delete(self, quota_id, user_id=None, project_id=None):
-        self.build_base_url(user_id, project_id)
+    def delete_user_quota(self, user_id, quota_id):
+        self.build_user_quota_base_url(user_id)
 
         return super(QuotaManager, self).delete(
+            base_url=self.base_url,
+            quota_id=quota_id)
+
+    def create_project_quota(self, project_id, resource_id,
+               limit=None):
+        self.build_project_quota_base_url(project_id)
+
+        return super(QuotaManager, self).create(
+            base_url=self.base_url,
+            resource_id=resource_id,
+            limit=limit)
+
+    def list_project_quotas(self, project_id, **kwargs):
+        self.build_project_quota_base_url(project_id)
+
+        return super(QuotaManager, self).list(base_url=self.base_url,
+                                              **kwargs)
+
+    def get_project_quota(self, project_id, quota_id):
+        self.build_project_quota_base_url(project_id)
+
+        return super(QuotaManager, self).get(
+            base_url=self.base_url,
+            quota_id=quota_id)
+
+    def update_project_quota(self, project_id, quota_id, limit):
+        self.build_project_quota_base_url(project_id)
+
+        return super(QuotaManager, self).update(
+            base_url=self.base_url,
+            quota_id=quota_id,
+            limit=limit)
+
+    def delete_project_quota(self, project_id, quota_id):
+        self.build_project_quota_base_url(project_id)
+
+        return super(QuotaManager, self).delete(
+            base_url=self.base_url,
             quota_id=quota_id)

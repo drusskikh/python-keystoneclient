@@ -90,10 +90,21 @@ class QuotaManager(base.CrudManager):
             limit=limit)
 
     def list_project_quotas(self, project_id, **kwargs):
-        self.build_project_quota_base_url(project_id)
+        import collections
+        StrictedQuota = collections.namedtuple('StrictedQuota', 'name, limit, id')
 
-        return super(QuotaManager, self).list(base_url=self.base_url,
+        self.build_project_quota_base_url(project_id)
+        quotas = super(QuotaManager, self).list(base_url=self.base_url,
                                               **kwargs)
+        result_lst = []
+        for quota in quotas:
+            quota_dict = {'name': quota.resource['name'],
+                          'limit': quota.limit,
+                          'id': quota.id}
+            obj = StrictedQuota(**quota_dict)
+            result_lst.append(obj)
+
+        return result_lst
 
     def get_project_quota(self, project_id, quota_id):
         self.build_project_quota_base_url(project_id)
